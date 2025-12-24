@@ -394,9 +394,9 @@ def sync_library_children(site_id: str, drive_id: str, item_id: Optional[str] = 
             meta_blob_path = file_blob_path + ".meta.json"
 
             # Uploads data
-            uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers, current_path, site_info, library_name)
+            uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers, current_path, site_info, library_name, directoryName)
 
-def uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers, current_path, site_info, library_name):
+def uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers, current_path, site_info, library_name, directoryName):
     """Actually downloads data to the local folder for ingesting
     1. Checks if the file exists / has been changed
     2. If required, downloads the data
@@ -417,10 +417,13 @@ def uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers,
                             site_info, library_name)
 
     # Upload metadata JSON
-    name=meta_blob_path,
-    data=json.dumps(metadata, indent=2),
-    overwrite=True
-    print(name)
+    name=meta_blob_path
+    name=name[0].split('/')[-1]
+    data=json.dumps(metadata, indent=2)
+
+    with open(directoryName, 'w') as jsonFile:
+        json.dump(data, jsonFile)
+        print(f"Dumped: {name}")
 
 def sync_site(site_id: str):
     """Sync all document libraries in a single site"""
