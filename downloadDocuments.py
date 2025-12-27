@@ -384,7 +384,9 @@ def sync_library_children(site_id: str, drive_id: str, item_id: Optional[str] = 
         # File → check timestamps, upload if changed
         else:
             # Confirms that the directory to download is there
-            directoryName = "RAG_DATA_ROOT"
+            home = os.path.expanduser("~")
+            directoryName = os.path.join(home, 'Documents\RAG_DATA_ROOT')
+
             if not os.path.exists(directoryName):
                 os.mkdir(directoryName)
                 print(f"Directory made: {directoryName}")
@@ -401,7 +403,6 @@ def uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers,
     1. Checks if the file exists / has been changed
     2. If required, downloads the data
     """
-    print(f"Uploading Data: {file_blob_path}")
 
     # Download file bytes from SharePoint
     file_resp = requests.get(
@@ -416,14 +417,20 @@ def uploadData(file_blob_path, meta_blob_path, site_id, drive_id, item, headers,
     metadata = build_metadata(item, current_path, extracted_text, 
                             site_info, library_name)
 
-    # Upload metadata JSON
+    # Getting metadata JSON
     name=meta_blob_path
-    name=name[0].split('/')[-1]
+    print('ogname', name)
+    name=name.split('/')[-1]
+    print('newname', name)
     data=json.dumps(metadata, indent=2)
 
-    with open(directoryName, 'w') as jsonFile:
-        json.dump(data, jsonFile)
-        print(f"Dumped: {name}")
+    # actually uploading data
+    try:
+        with open(f"{directoryName}\{name}", 'w') as jsonFile:
+            json.dump(data, jsonFile)
+            print(f"Dumped: {name}, In Directory: {directoryName}")
+    except Exception as e:
+        print(f"Error uploading data: {e}")
 
 def sync_site(site_id: str):
     """Sync all document libraries in a single site"""
