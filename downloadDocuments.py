@@ -18,6 +18,7 @@ import xlrd
 
 # Load .env
 load_dotenv()
+print("loaded env")
 
 TENANT_ID = os.getenv("TENANT_ID")
 CLIENT_ID = os.getenv("SHAREPOINT_CLIENT_ID")
